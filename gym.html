@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Basic -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Mobile Metas -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <!-- Site Metas -->
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <title>KIYEL</title>
+
+    <!-- slider stylesheet -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.1.3/assets/owl.carousel.min.css"
+    />
+
+    <!-- bootstrap core css -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+
+    <!-- fonts style -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Baloo+Chettan|Dosis:400,600,700|Poppins:400,600,700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Custom styles for this template -->
+    <link href="css/style.css" rel="stylesheet" />
+   
+    <!-- responsive style -->
+    <link href="css/responsive.css" rel="stylesheet" />
+  </head>
+
+  <body class="sub_page">
+    <div class="hero_area">
+      <!-- header section strats -->
+      <header class="header_section">
+        <div class="container">
+          <nav class="navbar navbar-expand-lg custom_nav-container">
+            <a class="navbar-brand" href="index.html">
+              <img src="images/logo.jpg" alt="" />
+              <span> KIYEL </span>
+            </a>
+            <div class="contact_nav" id="">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="contact.html">
+                    <img src="images/location.png" alt="" />
+                    <span>Location</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="service.html">
+                    <img src="images/call.png" alt="" />
+                    <span>Call : 09938476332</span>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="service.html">
+                    <img src="images/envelope.png" alt="" />
+                    <span>ileto.khel01@gmail.com</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </header>
+      <!-- end header section -->
+        <!-- slider section -->
+        <section class="slider_section position-relative">
+          <div class="container">
+            <div class="custom_nav2">
+              <nav class="navbar navbar-expand-lg custom_nav-container">
+                <button
+                  class="navbar-toggler"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#navbarSupportedContent"
+                  aria-controls="navbarSupportedContent"
+                  aria-expanded="false"
+                  aria-label="Toggle navigation"
+                >
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+  
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                  <div class="d-flex flex-column flex-lg-row align-items-center">
+                    <ul class="navbar-nav">
+                      <li class="nav-item active">
+                        <a class="nav-link" href="index.html"
+                          >Home <span class="sr-only">(current)</span></a
+                        >
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="about.html">About </a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="collection.html">Collection </a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact Us</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#">Login</a>
+                      </li>
+                    </ul>
+                    <form
+                      class="form-inline my-2 my-lg-0 ml-0 ml-lg-4 mb-3 mb-lg-0"
+                    >
+                      <button
+                        class="btn my-2 my-sm-0 nav_search-btn"
+                        type="submit"
+                      ></button>
+                    </form>
+                  </div>
+                </div>
+              </nav>
+            </div>
+          </div>
+           <!-- end slider section -->
+    </div>
+
+    <!-- gym tracker section -->
+    <section class="gym_section layout_padding">
+      <div class="container mt-4">
+        <div class="row">
+          <div class="col-md-4">
+            <h3 class="text-light">Add Workout</h3>
+            <form id="workout-form">
+              <div class="form-group">
+                <label for="date" class="text-light">Date</label>
+                <input type="date" class="form-control" id="date" required />
+              </div>
+              <div class="form-group">
+                <label for="exercise" class="text-light">Exercise</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="exercise"
+                  placeholder="e.g. Bench Press"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="set-count" class="text-light">Number of Sets</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="set-count"
+                  placeholder="e.g. 3"
+                  min="1"
+                  required
+                />
+              </div>
+              <div id="set-container"></div>
+              <button
+                type="button"
+                id="generate-sets"
+                class="btn btn-secondary btn-block"
+              >
+                Generate Sets
+              </button>
+              <button type="submit" class="btn btn-primary btn-block">
+                Add Workout
+              </button>
+            </form>
+          </div>
+
+          <div class="col-md-8">
+            <h3 class="text-light">Workout History</h3>
+            <table class="table table-dark table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Date</th>
+                  <th scope="col">Exercise</th>
+                  <th scope="col">Sets</th>
+                </tr>
+              </thead>
+              <tbody id="workout-history">
+                <!-- Workout data will go here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- end gym tracker section -->
+
+    <!-- info section -->
+    <section class="info_section layout_padding2-top">
+      <div class="container">
+        <div class="info_form">
+          <h4>Want an Update?</h4>
+          <form action="">
+            <input type="text" placeholder="Enter your email" />
+            <div class="d-flex justify-content-end">
+              <button>subscribe</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-3">
+            <h6>About My Website</h6>
+            <p>
+              Welcome to my personal website. Here, I share my work and
+              interests, focusing on web development and technology. This space
+              highlights my projects, skills, and what I’m passionate about.
+              Feel free to explore and learn more about what I do.
+            </p>
+          </div>
+          <div class="col-md-2 offset-md-1">
+            <h6>Menus</h6>
+            <ul>
+              <li class="active">
+                <a class="" href="index.html"
+                  >Home <span class="sr-only">(current)</span></a
+                >
+              </li>
+              <li class="">
+                <a class="" href="about.html">About </a>
+              </li>
+              <li class="">
+                <a class="" href="collection.html">Collection</a>
+              </li>
+              <li class="">
+                <a class="" href="contact.html">Contact Us</a>
+              </li>
+              <li class="">
+                <a class="" href="#">Login</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <h6>Social</h6>
+            <div class="social_box">
+              <a href="">
+                <img src="images/fb.png" alt="" />
+              </a>
+              <a href="">
+                <img src="images/twitter.png" alt="" />
+              </a>
+              <a href="">
+                <img src="images/linkedin.png" alt="" />
+              </a>
+              <a href="">
+                <img src="images/youtube.png" alt="" />
+              </a>
+              <a href="">
+                <img src="images/instagram.png" alt="" />
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">
+            <h6>Resources</h6>
+            <ul>
+              <li>
+                <a href="#">Link 1</a>
+              </li>
+              <li>
+                <a href="#">Link 2</a>
+              </li>
+              <li>
+                <a href="#">Link 3</a>
+              </li>
+              <li>
+                <a href="#">Link 4</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-3">
+            <h6>Support</h6>
+            <ul>
+              <li>
+                <a href="#">FAQ</a>
+              </li>
+              <li>
+                <a href="#">Contact Us</a>
+              </li>
+              <li>
+                <a href="#">Forums</a>
+              </li>
+              <li>
+                <a href="#">Documentation</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-3">
+            <h6>Blog</h6>
+            <p>
+              Stay updated with my latest thoughts and projects by visiting my
+              blog section. I regularly share insights and tips on web
+              development, fitness, and more.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- end info_section -->
+
+    <!-- footer section -->
+    <section class="container-fluid footer_section">
+      <p>
+        &copy; 2024 All Rights Reserved. Design by
+        <a href="https://html.design/">Kiyel</a>
+      </p>
+    </section>
+    <!-- footer section -->
+
+    <!-- JavaScript for the gym tracker -->
+    <script src="js/gym.js"></script>
+
+    <!-- JavaScript files -->
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/custom.js"></script>
+  </body>
+</html>
