@@ -6,9 +6,19 @@ document.getElementById("blog-form").addEventListener("submit", function (e) {
   const timestamp = new Date().toLocaleString();
 
   if (title && content) {
-    const blogPost = { title, content, timestamp };
     let posts = JSON.parse(localStorage.getItem("blogPosts")) || [];
-    posts.push(blogPost);
+    const editIndex = localStorage.getItem("editIndex");
+
+    if (editIndex !== null) {
+      // Update existing post
+      posts[editIndex] = { title, content, timestamp };
+      localStorage.removeItem("editIndex"); // Clear the temporary edit index
+    } else {
+      // Add new post
+      const blogPost = { title, content, timestamp };
+      posts.push(blogPost);
+    }
+
     localStorage.setItem("blogPosts", JSON.stringify(posts));
     displayPosts();
     document.getElementById("blog-form").reset();
@@ -20,15 +30,34 @@ function displayPosts() {
   const blogPostsContainer = document.getElementById("blog-posts");
   blogPostsContainer.innerHTML = posts
     .map(
-      (post) => `
+      (post, index) => `
         <div class="blog-post mt-3 p-3 bg-dark text-light">
-            <h4>${post.title}</h4>
-            <small>${post.timestamp}</small>
-            <p>${post.content}</p>
+          <h4>${post.title}</h4>
+          <small>${post.timestamp}</small>
+          <p>${post.content}</p>
+          <button class="btn btn-secondary btn-sm" onclick="editPost(${index})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deletePost(${index})">Delete</button>
         </div>
-    `
+      `
     )
     .join("");
+}
+
+function editPost(index) {
+  const posts = JSON.parse(localStorage.getItem("blogPosts"));
+  const post = posts[index];
+  document.getElementById("blog-title").value = post.title;
+  document.getElementById("blog-content").value = post.content;
+
+  // Store the index being edited
+  localStorage.setItem("editIndex", index);
+}
+
+function deletePost(index) {
+  let posts = JSON.parse(localStorage.getItem("blogPosts"));
+  posts.splice(index, 1);
+  localStorage.setItem("blogPosts", JSON.stringify(posts));
+  displayPosts();
 }
 
 document.addEventListener("DOMContentLoaded", displayPosts);
