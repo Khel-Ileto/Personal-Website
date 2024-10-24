@@ -1323,8 +1323,8 @@ pre code {
     -ms-flex: 0 0 50%;
     flex: 0 0 50%;
     max-width: 60%;
-    
-    bottom: 50px;
+    left:100px;
+    bottom: 70px;
     overflow: visible !important;
   }
   .col-lg-7 {
