@@ -1066,7 +1066,50 @@ a:focus {
   margin-top: -10px;
 }
 /*gym tracker section*/
+/* Additional styles for the workout program tracker */
+.exercise-input {
+  background-color: #2c2c2c;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+}
 
+.exercise-list {
+  font-size: 0.9rem;
+}
+
+.exercise-item {
+  background-color: #2c2c2c;
+  padding: 5px 10px;
+  margin-bottom: 5px;
+  border-radius: 3px;
+}
+
+.set-log {
+  background-color: #2c2c2c;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+}
+
+.form-control:focus {
+  background-color: #3a3a3a;
+  color: #fff;
+  border-color: #555;
+}
+
+.table-dark {
+  background-color: #1e1e1e;
+}
+
+.card {
+  margin-bottom: 20px;
+}
+
+.exercise-log h5 {
+  color: #f8bc1a;
+  margin-bottom: 15px;
+}
 body {
   background-color: #121212;
   color: #f5f5f5;

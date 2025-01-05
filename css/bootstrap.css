@@ -1138,6 +1138,7 @@ pre code {
   }
 }
 .col-md-4 {
+  padding: 10px;
   -ms-flex: 0 0 33.333333%;
   flex: 0 0 33.333333%;
   max-width: 33.333333%;
@@ -10286,11 +10287,13 @@ a.text-danger:focus {
 }
 
 .text-light {
+  font-size: 15px !important;
   color: #f8f9fa !important;
 }
 
 a.text-light:hover,
 a.text-light:focus {
+  
   color: #cbd3da !important;
 }
 

@@ -128,73 +128,137 @@
            <!-- end slider section -->
     </div>
 
-    <!-- gym tracker section -->
-    <section class="gym_section layout_padding">
-      <div class="container mt-4">
-        <div class="row">
-          <div class="col-md-4">
-            <h3 class="text-light">Add Workout</h3>
-            <form id="workout-form">
-              <div class="form-group">
-                <label for="date" class="text-light">Date</label>
-                <input type="date" class="form-control" id="date" required />
+ <!-- gym tracker section -->
+ <section class="gym_section layout_padding">
+  <div class="container mt-4">
+      <div class="row">
+          <!-- Program Creator -->
+          <div class="col-md-4 mb-4">
+              <div class="card bg-dark">
+                  <div class="card-body">
+                      <h3 class="text-light">Create Program</h3>
+                      <form id="program-form">
+                          <div class="form-group mb-3">
+                              <label class="text-light">Program Name</label>
+                              <input type="text" class="form-control bg-secondary text-light" id="program-name" 
+                                  placeholder="e.g., Push Day A" required>
+                          </div>
+                          <div id="exercises-container"></div>
+                          <button type="button" class="btn btn-secondary btn-block mb-2" id="add-exercise">
+                              Add Exercise
+                          </button>
+                          <button type="submit" class="btn btn-primary btn-block">
+                              Save Program
+                          </button>
+                      </form>
+                  </div>
               </div>
-              <div class="form-group">
-                <label for="exercise" class="text-light">Exercise</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="exercise"
-                  placeholder="e.g. Bench Press"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label for="set-count" class="text-light">Number of Sets</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="set-count"
-                  placeholder="e.g. 3"
-                  min="1"
-                  required
-                />
-              </div>
-              <div id="set-container"></div>
-              <button
-                type="button"
-                id="generate-sets"
-                class="btn btn-secondary btn-block"
-              >
-                Generate Sets
-              </button>
-              <button type="submit" class="btn btn-primary btn-block">
-                Add Workout
-              </button>
-            </form>
           </div>
 
-          <div class="col-md-8">
-            <h3 class="text-light">Workout History</h3>
-            <table class="table table-dark table-hover">
-              <thead>
-                <tr>
-                  <th scope="col">Date</th>
-                  <th scope="col">Exercise</th>
-                  <th scope="col">Sets</th>
-                </tr>
-              </thead>
-              <tbody id="workout-history">
-                <!-- Workout data will go here -->
-              </tbody>
-            </table>
+          <!-- Program List -->
+          <div class="col-md-8 mb-4">
+              <h3 class="text-light">Your Programs</h3>
+              <div id="program-list" class="row"></div>
           </div>
-        </div>
       </div>
-    </section>
-    <!-- end gym tracker section -->
 
-    !-- info section -->
+      <!-- Workout Logger (Initially Hidden) -->
+      <div id="workout-logger" style="display: none;">
+          <div class="row">
+              <div class="col-12">
+                  <div class="card bg-dark mb-4">
+                      <div class="card-body">
+                          <h4 class="text-light">Log Workout: <span id="logging-program-name"></span></h4>
+                          <form id="workout-log-form">
+                              <div class="form-group mb-3">
+                                  <label class="text-light">Date</label>
+                                  <input type="date" class="form-control bg-secondary text-light" id="workout-date" required>
+                              </div>
+                              <div id="exercise-logs"></div>
+                              <button type="submit" class="btn btn-primary">Save Workout</button>
+                              <button type="button" class="btn btn-secondary" id="cancel-log">Cancel</button>
+                          </form>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Workout History -->
+      <div class="row">
+          <div class="col-12">
+              <h3 class="text-light">Workout History</h3>
+              <div class="table-responsive">
+                  <table class="table table-dark table-hover">
+                      <thead>
+                          <tr>
+                              <th>Date</th>
+                              <th>Program</th>
+                              <th>Actions</th>
+                          </tr>
+                      </thead>
+                      <tbody id="workout-history"></tbody>
+                  </table>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Edit Program Modal -->
+  <div class="modal fade" id="editProgramModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+          <div class="modal-content bg-dark">
+              <div class="modal-header">
+                  <h5 class="modal-title text-light">Edit Program</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                  <form id="edit-program-form">
+                      <div class="form-group mb-3">
+                          <label class="text-light">Program Name</label>
+                          <input type="text" class="form-control bg-secondary text-light" id="edit-program-name" required>
+                      </div>
+                      <div id="edit-exercises-container"></div>
+                      <button type="button" class="btn btn-secondary mb-2" id="edit-add-exercise">
+                          Add Exercise
+                      </button>
+                  </form>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" id="cancel-edit-program">Cancel</button>
+                  <button type="button" class="btn btn-primary" id="save-edit-program">Save Changes</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Edit Workout Modal -->
+  <div class="modal fade" id="editWorkoutModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+          <div class="modal-content bg-dark">
+              <div class="modal-header">
+                  <h5 class="modal-title text-light">Edit Workout</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                  <form id="edit-workout-form">
+                      <div class="form-group mb-3">
+                          <label class="text-light">Date</label>
+                          <input type="date" class="form-control bg-secondary text-light" id="edit-workout-date" required>
+                      </div>
+                      <div id="edit-exercise-logs"></div>
+                  </form>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" id="cancel-edit-program">Cancel</button>
+                  <button type="button" class="btn btn-primary" id="save-edit-workout">Save Changes</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+    <!-- end gym tracker section -->
+    
 
     <section class="info_section layout_padding2-top">
       <div class="container">
