@@ -149,7 +149,7 @@ editProgramForm.addEventListener('submit', saveEditedProgram);
                     <div class="row">
                         <div class="col">
                             <input type="number" class="form-control bg-secondary text-light reps-done" 
-                                placeholder="Enter reps completed" min="0" required
+                                placeholder="Enter reps completed" min="1" required
                                 value="${values ? values.reps : ''}">
                         </div>
                         <div class="col">
@@ -167,6 +167,18 @@ editProgramForm.addEventListener('submit', saveEditedProgram);
             </div>
         `;
     }
+    document.addEventListener('input', (event) => {
+        // Check if the target is reps or weight input
+        if (event.target.classList.contains('reps-done') || event.target.classList.contains('weight-used')) {
+            let value = parseFloat(event.target.value);
+    
+            // Ensure the value is a positive number and greater than 0
+            if (isNaN(value) || value <= 0) {
+                event.target.value = ''; // Clear invalid input
+            }
+        }
+    });
+    
     window.toggleWeightUnit = function(element) {
         const currentUnit = element.textContent;
         element.textContent = currentUnit === 'kg' ? 'lbs' : 'kg';

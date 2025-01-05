@@ -10430,3 +10430,16 @@ a.text-dark:focus {
   }
 }
 /*# sourceMappingURL=bootstrap.css.map */
+/* For the placeholder of reps */
+input.reps-done::placeholder {
+  /* Add your styles here */
+  color: lightgray;
+  font-style: italic;
+}
+
+/* For the placeholder of weight */
+input.weight-used::placeholder {
+  /* Add your styles here */
+  color: lightgray;
+  font-style: italic;
+}
