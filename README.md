@@ -1,2 +1,1 @@
-"# Portfolio" 
-"# Personal-Website" 
+This is a personal website for me to practice coding, build a portfolio, blog my life, and track my gym progress.
