@@ -25,6 +25,7 @@
 
     <!-- bootstrap core css -->
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
+    
 
     <!-- fonts style -->
     <link
@@ -129,7 +130,7 @@
     </div>
 
  <!-- gym tracker section -->
- <section class="gym_section layout_padding">
+<section class="gym_section layout_padding">
   <div class="container mt-4">
       <div class="row">
           <!-- Program Creator -->
@@ -162,7 +163,7 @@
           </div>
       </div>
 
-      <!-- Workout Logger (Initially Hidden) -->
+      <!-- Workout Logger -->
       <div id="workout-logger" style="display: none;">
           <div class="row">
               <div class="col-12">
@@ -250,14 +251,39 @@
                   </form>
               </div>
               <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" id="cancel-edit-program">Cancel</button>
+                  <button type="button" class="btn btn-secondary" id="cancel-edit-workout">Cancel</button>
                   <button type="button" class="btn btn-primary" id="save-edit-workout">Save Changes</button>
               </div>
           </div>
       </div>
   </div>
+  <!-- View Workout Modal -->
+<div class="modal fade" id="viewWorkoutModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content bg-dark">
+          <div class="modal-header">
+              <h5 class="modal-title text-light">Workout Details</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+              <div class="mb-3">
+                  <strong class="text-light">Date: </strong>
+                  <span id="view-workout-date" class="text-light"></span>
+              </div>
+              <div class="mb-3">
+                  <strong class="text-light">Program: </strong>
+                  <span id="view-workout-program" class="text-light"></span>
+              </div>
+              <div id="view-exercise-logs" class="mt-4"></div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+      </div>
+  </div>
+</div>
 </section>
-    <!-- end gym tracker section -->
+<!-- end gym tracker section -->
     
 
     <section class="info_section layout_padding2-top">

@@ -15,77 +15,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const editExerciseLogs = document.getElementById('edit-exercise-logs');
     const editProgramForm = document.getElementById('edit-program-form');
     const editExercisesContainer = document.getElementById('edit-exercises-container');
- // Add deleteProgram function
- window.deleteProgram = function(programId) {
-    if (confirm('Are you sure you want to delete this program?')) {
-        // Remove the program
-        programs = programs.filter(p => p.id !== programId);
-        localStorage.setItem('workoutPrograms', JSON.stringify(programs));
-        
-        // Also remove associated workout logs
-        workoutLogs = workoutLogs.filter(log => log.programId !== programId);
-        localStorage.setItem('workoutLogs', JSON.stringify(workoutLogs));
-        
-        renderProgramList();
-        renderWorkoutHistory();
-    }
-};
+    const viewWorkoutModal = new bootstrap.Modal(document.getElementById('viewWorkoutModal'));
 
-// Set up modal close button handlers
-document.querySelectorAll('.btn-close').forEach(closeBtn => {
-    closeBtn.addEventListener('click', function() {
-        const modal = this.closest('.modal');
-        if (modal.id === 'editWorkoutModal') {
-            editWorkoutModal.hide();
-            editWorkoutForm.reset();
-            editExerciseLogs.innerHTML = '';
-        } else if (modal.id === 'editProgramModal') {
-            editProgramModal.hide();
-            editProgramForm.reset();
-            editExercisesContainer.innerHTML = '';
-        }
-    });
-});
 
-// Update cancel button functionality
-cancelLogBtn.addEventListener('click', () => {
-    if (confirm('Are you sure you want to cancel this workout log? All entered data will be lost.')) {
-        workoutLogger.style.display = 'none';
-        workoutLogForm.reset();
-        exerciseLogs.innerHTML = '';
-    }
-});
-// Add cancel button for edit program modal
-const cancelEditProgramBtn = document.getElementById('cancel-edit-program');
-if (cancelEditProgramBtn) {
-    cancelEditProgramBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
-            editProgramModal.hide();
-            editProgramForm.reset();
-            editExercisesContainer.innerHTML = '';
-        }
-    });
-}
-
-// Add cancel button for edit workout modal
-const cancelEditWorkoutBtn = document.getElementById('cancel-edit-workout');
-if (cancelEditWorkoutBtn) {
-    cancelEditWorkoutBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
-            editWorkoutModal.hide();
-            editWorkoutForm.reset();
-            editExerciseLogs.innerHTML = '';
-        }
-    });
-}
-
-// Make sure editProgramForm submit handler is properly set up
-editProgramForm.addEventListener('submit', saveEditedProgram);
     // Load saved data
     let programs = JSON.parse(localStorage.getItem('workoutPrograms')) || [];
     let workoutLogs = JSON.parse(localStorage.getItem('workoutLogs')) || [];
 
-    // Add exercise field (for program creation)
+    // Add exercise field for program creation
     function addExerciseField(container, values = null) {
         const exerciseDiv = document.createElement('div');
         exerciseDiv.className = 'exercise-input mb-3 p-3 border border-secondary rounded';
@@ -95,26 +32,6 @@ editProgramForm.addEventListener('submit', saveEditedProgram);
                 <input type="text" class="form-control bg-secondary text-light exercise-name" 
                     placeholder="Enter exercise name (e.g., Bench Press)" required
                     value="${values ? values.name : ''}">
-            </div>
-            <div class="row mb-2">
-                <div class="col-md-4">
-                    <label class="text-light">Sets</label>
-                    <input type="number" class="form-control bg-secondary text-light sets" 
-                        placeholder="Number of sets" min="1" required
-                        value="${values ? values.sets : ''}">
-                </div>
-                <div class="col-md-4">
-                    <label class="text-light">Min Reps</label>
-                    <input type="number" class="form-control bg-secondary text-light min-reps" 
-                        placeholder="Minimum reps" min="1" required
-                        value="${values ? values.minReps : ''}">
-                </div>
-                <div class="col-md-4">
-                    <label class="text-light">Max Reps</label>
-                    <input type="number" class="form-control bg-secondary text-light max-reps" 
-                        placeholder="Maximum reps" min="1" required
-                        value="${values ? values.maxReps : ''}">
-                </div>
             </div>
             <div class="form-group mb-2">
                 <label class="text-light">Notes (optional)</label>
@@ -129,15 +46,6 @@ editProgramForm.addEventListener('submit', saveEditedProgram);
         exerciseDiv.querySelector('.remove-exercise').addEventListener('click', () => exerciseDiv.remove());
     }
 
- 
-
-    // Update weight unit labels
-    function updateWeightUnitLabels(container, unit) {
-        container.querySelectorAll('.weight-unit-label').forEach(label => {
-            label.textContent = unit;
-        });
-    }
-
     // Create set input fields
     function createSetInputs(setIndex, weightUnit = 'kg', values = null) {
         return `
@@ -149,40 +57,32 @@ editProgramForm.addEventListener('submit', saveEditedProgram);
                     <div class="row">
                         <div class="col">
                             <input type="number" class="form-control bg-secondary text-light reps-done" 
-                                placeholder="Enter reps completed" min="1" required
+                                placeholder="Reps" min="1" required
                                 value="${values ? values.reps : ''}">
                         </div>
                         <div class="col">
                             <div class="input-group">
                                 <input type="number" class="form-control bg-secondary text-light weight-used" 
-                                    placeholder="Enter weight" step="0.5" min="0" required
+                                    placeholder="Weight" step="0.5" min="0" required
                                     value="${values ? values.weight : ''}">
                                 <span class="input-group-text bg-secondary text-light weight-unit-label" 
-                                      style="cursor: pointer;" 
                                       onclick="toggleWeightUnit(this)">${weightUnit}</span>
                             </div>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn btn-danger btn-sm remove-set">×</button>
                         </div>
                     </div>
                 </div>
             </div>
         `;
     }
-    document.addEventListener('input', (event) => {
-        // Check if the target is reps or weight input
-        if (event.target.classList.contains('reps-done') || event.target.classList.contains('weight-used')) {
-            let value = parseFloat(event.target.value);
-    
-            // Ensure the value is a positive number and greater than 0
-            if (isNaN(value) || value <= 0) {
-                event.target.value = ''; // Clear invalid input
-            }
-        }
-    });
-    
+
+    // Toggle weight unit
     window.toggleWeightUnit = function(element) {
-        const currentUnit = element.textContent;
-        element.textContent = currentUnit === 'kg' ? 'lbs' : 'kg';
+        element.textContent = element.textContent === 'kg' ? 'lbs' : 'kg';
     };
+
     // Save program
     function saveProgram(e) {
         e.preventDefault();
@@ -190,9 +90,6 @@ editProgramForm.addEventListener('submit', saveEditedProgram);
         exercisesContainer.querySelectorAll('.exercise-input').forEach(exerciseDiv => {
             exercises.push({
                 name: exerciseDiv.querySelector('.exercise-name').value,
-                sets: parseInt(exerciseDiv.querySelector('.sets').value),
-                minReps: parseInt(exerciseDiv.querySelector('.min-reps').value),
-                maxReps: parseInt(exerciseDiv.querySelector('.max-reps').value),
                 notes: exerciseDiv.querySelector('.exercise-notes').value
             });
         });
@@ -210,47 +107,57 @@ editProgramForm.addEventListener('submit', saveEditedProgram);
         addExerciseField(exercisesContainer);
         renderProgramList();
     }
-// Edit program
-window.editProgram = function(programId) {
-    const program = programs.find(p => p.id === programId);
-    document.getElementById('edit-program-name').value = program.name;
-    editExercisesContainer.innerHTML = '';
-    
-    program.exercises.forEach(exercise => {
-        addExerciseField(editExercisesContainer, exercise);
-    });
-    
-    editProgramForm.dataset.programId = programId;
-    editProgramModal.show();
-};
 
-// Save edited program
-function saveEditedProgram(e) {
-    e.preventDefault();
-    const programId = editProgramForm.dataset.programId;
-    const programIndex = programs.findIndex(p => p.id === programId);
-    
-    const exercises = [];
-    editExercisesContainer.querySelectorAll('.exercise-input').forEach(exerciseDiv => {
-        exercises.push({
-            name: exerciseDiv.querySelector('.exercise-name').value,
-            sets: parseInt(exerciseDiv.querySelector('.sets').value),
-            minReps: parseInt(exerciseDiv.querySelector('.min-reps').value),
-            maxReps: parseInt(exerciseDiv.querySelector('.max-reps').value),
-            notes: exerciseDiv.querySelector('.exercise-notes').value
-        });
-    });
-
-    programs[programIndex] = {
-        ...programs[programIndex],
-        name: document.getElementById('edit-program-name').value,
-        exercises: exercises
+    // Delete program
+    window.deleteProgram = function(programId) {
+        if (confirm('Are you sure you want to delete this program?')) {
+            programs = programs.filter(p => p.id !== programId);
+            localStorage.setItem('workoutPrograms', JSON.stringify(programs));
+            workoutLogs = workoutLogs.filter(log => log.programId !== programId);
+            localStorage.setItem('workoutLogs', JSON.stringify(workoutLogs));
+            renderProgramList();
+            renderWorkoutHistory();
+        }
     };
 
-    localStorage.setItem('workoutPrograms', JSON.stringify(programs));
-    editProgramModal.hide();
-    renderProgramList();
-}
+    // Edit program
+    window.editProgram = function(programId) {
+        const program = programs.find(p => p.id === programId);
+        document.getElementById('edit-program-name').value = program.name;
+        editExercisesContainer.innerHTML = '';
+        
+        program.exercises.forEach(exercise => {
+            addExerciseField(editExercisesContainer, exercise);
+        });
+        
+        editProgramForm.dataset.programId = programId;
+        editProgramModal.show();
+    };
+
+    // Save edited program
+    function saveEditedProgram(e) {
+        e.preventDefault();
+        const programId = editProgramForm.dataset.programId;
+        const programIndex = programs.findIndex(p => p.id === programId);
+        
+        const exercises = [];
+        editExercisesContainer.querySelectorAll('.exercise-input').forEach(exerciseDiv => {
+            exercises.push({
+                name: exerciseDiv.querySelector('.exercise-name').value,
+                notes: exerciseDiv.querySelector('.exercise-notes').value
+            });
+        });
+
+        programs[programIndex] = {
+            ...programs[programIndex],
+            name: document.getElementById('edit-program-name').value,
+            exercises: exercises
+        };
+
+        localStorage.setItem('workoutPrograms', JSON.stringify(programs));
+        editProgramModal.hide();
+        renderProgramList();
+    }
 
     // Start workout logging
     window.startWorkoutLog = function(e) {
@@ -267,33 +174,41 @@ function saveEditedProgram(e) {
             
             exerciseLog.innerHTML = `
                 <div class="exercise-header mb-3">
-                    <h5 class="text-light">${exercise.name}</h5>
-                    <p class="text-light small mb-1">Target: ${exercise.minReps}-${exercise.maxReps} reps</p>
+                    <input type="text" class="form-control bg-secondary text-light mb-2" 
+                           value="${exercise.name}" placeholder="Exercise name">
                     ${exercise.notes ? `<p class="text-light small mb-1">Notes: ${exercise.notes}</p>` : ''}
-                  
                 </div>
+                <div class="sets-container"></div>
+                <button type="button" class="btn btn-secondary btn-sm add-set">Add Set</button>
             `;
 
-            const setsContainer = document.createElement('div');
-            setsContainer.className = 'sets-container';
-            for (let i = 0; i < exercise.sets; i++) {
-                setsContainer.innerHTML += createSetInputs(i);
-            }
-            exerciseLog.appendChild(setsContainer);
+            const setsContainer = exerciseLog.querySelector('.sets-container');
+            setsContainer.innerHTML = createSetInputs(0);
+
+            // Add set button handler
+            exerciseLog.querySelector('.add-set').addEventListener('click', () => {
+                const setCount = setsContainer.children.length;
+                const setHtml = createSetInputs(setCount);
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = setHtml;
+                setsContainer.appendChild(wrapper.firstElementChild);
+            });
+
+            // Remove set handler
+            setsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-set')) {
+                    const setLog = e.target.closest('.set-log');
+                    if (setsContainer.children.length > 1) {
+                        setLog.remove();
+                    }
+                }
+            });
 
             exerciseLogs.appendChild(exerciseLog);
-
-            // Add weight unit toggle functionality
-            exerciseLog.querySelectorAll('.weight-unit').forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    updateWeightUnitLabels(exerciseLog, e.target.value);
-                });
-            });
         });
 
         workoutLogForm.dataset.programId = programId;
         
-        // Set today's date as default
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('workout-date').value = today;
     };
@@ -302,21 +217,19 @@ function saveEditedProgram(e) {
     function saveWorkoutLog(e) {
         e.preventDefault();
         const exercises = [];
-exerciseLogs.querySelectorAll('.exercise-log').forEach((exerciseLog, index) => {
-    const sets = [];
-    
-    exerciseLog.querySelectorAll('.set-log').forEach((setLog) => {
-        sets.push({
-            reps: parseInt(setLog.querySelector('.reps-done').value),
-            weight: parseFloat(setLog.querySelector('.weight-used').value),
-            weightUnit: setLog.querySelector('.weight-unit-label').textContent
-        });
-    });
+        
+        exerciseLogs.querySelectorAll('.exercise-log').forEach((exerciseLog) => {
+            const sets = [];
+            exerciseLog.querySelectorAll('.set-log').forEach((setLog) => {
+                sets.push({
+                    reps: parseInt(setLog.querySelector('.reps-done').value),
+                    weight: parseFloat(setLog.querySelector('.weight-used').value),
+                    weightUnit: setLog.querySelector('.weight-unit-label').textContent
+                });
+            });
 
-            const program = programs.find(p => p.id === workoutLogForm.dataset.programId);
             exercises.push({
-                name: program.exercises[index].name,
-                targetRange: `${program.exercises[index].minReps}-${program.exercises[index].maxReps}`,
+                name: exerciseLog.querySelector('.exercise-header input').value,
                 sets: sets
             });
         });
@@ -338,41 +251,48 @@ exerciseLogs.querySelectorAll('.exercise-log').forEach((exerciseLog, index) => {
     // Edit workout
     window.editWorkout = function(logId) {
         const log = workoutLogs.find(l => l.id === logId);
-        const program = programs.find(p => p.id === log.programId);
 
         document.getElementById('edit-workout-date').value = log.date;
         editExerciseLogs.innerHTML = '';
 
-        log.exercises.forEach((exercise, index) => {
+        log.exercises.forEach((exercise) => {
             const exerciseLog = document.createElement('div');
             exerciseLog.className = 'exercise-log mb-4 p-3 border border-secondary rounded';
             
             exerciseLog.innerHTML = `
                 <div class="exercise-header mb-3">
-                    <h5 class="text-light">${exercise.name}</h5>
-                    <p class="text-light small mb-1">Target: ${exercise.targetRange}</p>
-             
+                    <input type="text" class="form-control bg-secondary text-light mb-2" 
+                           value="${exercise.name}" placeholder="Exercise name">
                 </div>
+                <div class="sets-container"></div>
+                <button type="button" class="btn btn-secondary btn-sm add-set">Add Set</button>
             `;
 
-            const setsContainer = document.createElement('div');
-            setsContainer.className = 'sets-container';
-            exercise.sets.forEach((set, i) => {
-                setsContainer.innerHTML += createSetInputs(i, set.weightUnit, set);
+            const setsContainer = exerciseLog.querySelector('.sets-container');
+            exercise.sets.forEach((set, index) => {
+                setsContainer.innerHTML += createSetInputs(index, set.weightUnit, set);
             });
-            exerciseLog.appendChild(setsContainer);
+
+            // Add set button handler
+            exerciseLog.querySelector('.add-set').addEventListener('click', () => {
+                const setCount = setsContainer.children.length;
+                const setHtml = createSetInputs(setCount);
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = setHtml;
+                setsContainer.appendChild(wrapper.firstElementChild);
+            });
+
+            // Remove set handler
+            setsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-set')) {
+                    const setLog = e.target.closest('.set-log');
+                    if (setsContainer.children.length > 1) {
+                        setLog.remove();
+                    }
+                }
+            });
 
             editExerciseLogs.appendChild(exerciseLog);
-
-            // Add weight unit toggle functionality
-            exerciseLog.querySelectorAll('.weight-unit').forEach(radio => {
-                if (exercise.sets[0].weightUnit === radio.value) {
-                    radio.checked = true;
-                }
-                radio.addEventListener('change', (e) => {
-                    updateWeightUnitLabels(exerciseLog, e.target.value);
-                });
-            });
         });
 
         editWorkoutForm.dataset.logId = logId;
@@ -386,19 +306,18 @@ exerciseLogs.querySelectorAll('.exercise-log').forEach((exerciseLog, index) => {
         const log = workoutLogs[logIndex];
 
         const exercises = [];
-editExerciseLogs.querySelectorAll('.exercise-log').forEach((exerciseLog, exIdx) => {
-    const sets = [];
-    
-    exerciseLog.querySelectorAll('.set-log').forEach((setLog) => {
-        sets.push({
-            reps: parseInt(setLog.querySelector('.reps-done').value),
-            weight: parseFloat(setLog.querySelector('.weight-used').value),
-            weightUnit: setLog.querySelector('.weight-unit-label').textContent
-        });
-    });
+        editExerciseLogs.querySelectorAll('.exercise-log').forEach((exerciseLog) => {
+            const sets = [];
+            exerciseLog.querySelectorAll('.set-log').forEach((setLog) => {
+                sets.push({
+                    reps: parseInt(setLog.querySelector('.reps-done').value),
+                    weight: parseFloat(setLog.querySelector('.weight-used').value),
+                    weightUnit: setLog.querySelector('.weight-unit-label').textContent
+                });
+            });
+
             exercises.push({
-                name: log.exercises[exIdx].name,
-                targetRange: log.exercises[exIdx].targetRange,
+                name: exerciseLog.querySelector('.exercise-header input').value,
                 sets: sets
             });
         });
@@ -410,9 +329,18 @@ editExerciseLogs.querySelectorAll('.exercise-log').forEach((exerciseLog, exIdx) 
         };
 
         localStorage.setItem('workoutLogs', JSON.stringify(workoutLogs));
-        renderWorkoutHistory();
         editWorkoutModal.hide();
+        renderWorkoutHistory();
     }
+
+    // Delete workout
+    window.deleteWorkout = function(logId) {
+        if (confirm('Are you sure you want to delete this workout log?')) {
+            workoutLogs = workoutLogs.filter(l => l.id !== logId);
+            localStorage.setItem('workoutLogs', JSON.stringify(workoutLogs));
+            renderWorkoutHistory();
+        }
+    };
 
     // Render program list
     function renderProgramList() {
@@ -427,7 +355,7 @@ editExerciseLogs.querySelectorAll('.exercise-log').forEach((exerciseLog, exIdx) 
                         <div class="mb-3">
                             ${program.exercises.map(ex => `
                                 <div class="text-light small">
-                                    ${ex.name}: ${ex.sets}x${ex.minReps}-${ex.maxReps}
+                                    ${ex.name}
                                     ${ex.notes ? `<br><small class="text-muted">${ex.notes}</small>` : ''}
                                 </div>
                             `).join('')}
@@ -447,24 +375,91 @@ editExerciseLogs.querySelectorAll('.exercise-log').forEach((exerciseLog, exIdx) 
             programList.appendChild(programCard);
         });
     }
-
-    // Event listeners
-    addExerciseBtn.addEventListener('click', () => addExerciseField(exercisesContainer));
-    programForm.addEventListener('submit', saveProgram);
-    workoutLogForm.addEventListener('submit', saveWorkoutLog);
-    document.getElementById('save-edit-workout').addEventListener('click', saveEditedWorkout);
-    cancelLogBtn.addEventListener('click', () => {
-        workoutLogger.style.display = 'none';
-        workoutLogForm.reset();
+   // Add view workout function
+   window.viewWorkout = function(logId) {
+    const log = workoutLogs.find(l => l.id === logId);
+    const program = programs.find(p => p.id === log.programId);
+    
+    // Set date and program name
+    document.getElementById('view-workout-date').textContent = new Date(log.date).toLocaleDateString();
+    document.getElementById('view-workout-program').textContent = program ? program.name : 'Deleted Program';
+    
+    // Clear and populate exercise logs
+    const viewExerciseLogs = document.getElementById('view-exercise-logs');
+    viewExerciseLogs.innerHTML = '';
+    
+    log.exercises.forEach((exercise) => {
+        const exerciseDiv = document.createElement('div');
+        exerciseDiv.className = 'mb-4 p-3 border border-secondary rounded';
+        
+        // Calculate exercise stats
+        const totalWeight = exercise.sets.reduce((sum, set) => {
+            const weight = set.weight;
+            const reps = set.reps;
+            // Convert to kg if needed
+            const weightInKg = set.weightUnit === 'lbs' ? weight * 0.453592 : weight;
+            return sum + (weightInKg * reps);
+        }, 0);
+        
+        const totalReps = exercise.sets.reduce((sum, set) => sum + set.reps, 0);
+        const maxWeight = Math.max(...exercise.sets.map(set => set.weight));
+        
+        exerciseDiv.innerHTML = `
+            <h5 class="text-light mb-3">${exercise.name}</h5>
+            <div class="stats-summary mb-3">
+                <div class="row text-light">
+                    <div class="col-md-4">
+                        <small>Total Volume: ${totalWeight.toFixed(1)} kg</small>
+                    </div>
+                    <div class="col-md-4">
+                        <small>Total Reps: ${totalReps}</small>
+                    </div>
+                    <div class="col-md-4">
+                        <small>Max Weight: ${maxWeight} ${exercise.sets[0].weightUnit}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-dark table-sm">
+                    <thead>
+                        <tr>
+                            <th>Set</th>
+                            <th>Weight</th>
+                            <th>Reps</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${exercise.sets.map((set, index) => `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${set.weight} ${set.weightUnit}</td>
+                                <td>${set.reps}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        viewExerciseLogs.appendChild(exerciseDiv);
     });
-  
-    document.getElementById('edit-add-exercise').addEventListener('click', () => addExerciseField(editExercisesContainer));
-
-    // Initialize
-    addExerciseField(exercisesContainer);
-    renderProgramList();
-    renderWorkoutHistory();
-
+    
+    // Initialize modal with button handlers
+    const viewWorkoutModal = new bootstrap.Modal(document.getElementById('viewWorkoutModal'), {
+        keyboard: true,
+        backdrop: true
+    });
+    
+    // Add event listeners for close and minimize buttons
+    document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(button => {
+        button.addEventListener('click', () => {
+            viewWorkoutModal.hide();
+        });
+    });
+    
+    viewWorkoutModal.show();
+};
+    // VIEW BUTTON SECTION
     // Render workout history
     function renderWorkoutHistory() {
         workoutHistory.innerHTML = '';
@@ -475,6 +470,9 @@ editExerciseLogs.querySelectorAll('.exercise-log').forEach((exerciseLog, exIdx) 
                 <td>${new Date(log.date).toLocaleDateString()}</td>
                 <td>${program ? program.name : 'Deleted Program'}</td>
                 <td>
+                    <button class="btn btn-primary btn-sm me-2" onclick="viewWorkout('${log.id}')">
+                        View
+                    </button>
                     <button class="btn btn-secondary btn-sm me-2" onclick="editWorkout('${log.id}')">
                         Edit
                     </button>
@@ -487,14 +485,78 @@ editExerciseLogs.querySelectorAll('.exercise-log').forEach((exerciseLog, exIdx) 
         });
     }
 
-    // Delete workout
-    window.deleteWorkout = function(logId) {
-        if (confirm('Are you sure you want to delete this workout log?')) {
-            workoutLogs = workoutLogs.filter(l => l.id !== logId);
-            localStorage.setItem('workoutLogs', JSON.stringify(workoutLogs));
-            renderWorkoutHistory();
+    // Set up modal close button handlers
+    document.querySelectorAll('.btn-close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            if (modal.id === 'editWorkoutModal') {
+                editWorkoutModal.hide();
+                editWorkoutForm.reset();
+                editExerciseLogs.innerHTML = '';
+            } else if (modal.id === 'editProgramModal') {
+                editProgramModal.hide();
+                editProgramForm.reset();
+                editExercisesContainer.innerHTML = '';
+            }
+        });
+    });
+
+    // Cancel button handlers
+    cancelLogBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to cancel this workout log? All entered data will be lost.')) {
+            workoutLogger.style.display = 'none';
+            workoutLogForm.reset();
+            exerciseLogs.innerHTML = '';
         }
-    };
+    });
+
+    const cancelEditProgramBtn = document.getElementById('cancel-edit-program');
+    if (cancelEditProgramBtn) {
+        cancelEditProgramBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
+                editProgramModal.hide();
+                editProgramForm.reset();
+                editExercisesContainer.innerHTML = '';
+            }
+        });
+    }
+
+    const cancelEditWorkoutBtn = document.getElementById('cancel-edit-workout');
+    if (cancelEditWorkoutBtn) {
+        cancelEditWorkoutBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to cancel? All changes will be lost.')) {
+                editWorkoutModal.hide();
+                editWorkoutForm.reset();
+                editExerciseLogs.innerHTML = '';
+            }
+        });
+    }
+
+    // Input validation for reps and weight
+    document.addEventListener('input', (event) => {
+        if (event.target.classList.contains('reps-done') || event.target.classList.contains('weight-used')) {
+            let value = parseFloat(event.target.value);
+            if (isNaN(value) || value <= 0) {
+                event.target.value = '';
+            }
+        }
+    });
+
+    // Event listeners
+    addExerciseBtn.addEventListener('click', () => addExerciseField(exercisesContainer));
+    document.getElementById('edit-add-exercise').addEventListener('click', () => addExerciseField(editExercisesContainer));
+    programForm.addEventListener('submit', saveProgram);
+    workoutLogForm.addEventListener('submit', saveWorkoutLog);
+    editProgramForm.addEventListener('submit', saveEditedProgram);
+    document.getElementById('save-edit-workout').addEventListener('click', saveEditedWorkout);
+    document.getElementById('save-edit-program').addEventListener('click', function() {
+        saveEditedProgram(new Event('submit'));
+    });
+
+    // Initialize
+    addExerciseField(exercisesContainer);
+    renderProgramList();
+    renderWorkoutHistory();
 
     // Set today's date as default for new workout logs
     const today = new Date().toISOString().split('T')[0];
