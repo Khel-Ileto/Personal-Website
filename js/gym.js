@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const editExercisesContainer = document.getElementById('edit-exercises-container');
     const viewWorkoutModal = new bootstrap.Modal(document.getElementById('viewWorkoutModal'));
 
-
     // Load saved data
     let programs = JSON.parse(localStorage.getItem('workoutPrograms')) || [];
     let workoutLogs = JSON.parse(localStorage.getItem('workoutLogs')) || [];
@@ -177,6 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <input type="text" class="form-control bg-secondary text-light mb-2" 
                            value="${exercise.name}" placeholder="Exercise name">
                     ${exercise.notes ? `<p class="text-light small mb-1">Notes: ${exercise.notes}</p>` : ''}
+                    <button type="button" class="btn btn-danger btn-sm remove-exercise-log mb-2">Remove Exercise</button>
                 </div>
                 <div class="sets-container"></div>
                 <button type="button" class="btn btn-secondary btn-sm add-set">Add Set</button>
@@ -184,6 +184,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const setsContainer = exerciseLog.querySelector('.sets-container');
             setsContainer.innerHTML = createSetInputs(0);
+
+            // Add remove exercise handler
+            exerciseLog.querySelector('.remove-exercise-log').addEventListener('click', () => {
+                if (exerciseLogs.children.length > 1) {
+                    exerciseLog.remove();
+                } else {
+                    alert('You must have at least one exercise in your workout.');
+                }
+            });
 
             // Add set button handler
             exerciseLog.querySelector('.add-set').addEventListener('click', () => {
@@ -263,6 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="exercise-header mb-3">
                     <input type="text" class="form-control bg-secondary text-light mb-2" 
                            value="${exercise.name}" placeholder="Exercise name">
+                    <button type="button" class="btn btn-danger btn-sm remove-exercise-log mb-2">Remove Exercise</button>
                 </div>
                 <div class="sets-container"></div>
                 <button type="button" class="btn btn-secondary btn-sm add-set">Add Set</button>
@@ -271,6 +281,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const setsContainer = exerciseLog.querySelector('.sets-container');
             exercise.sets.forEach((set, index) => {
                 setsContainer.innerHTML += createSetInputs(index, set.weightUnit, set);
+            });
+
+            // Add remove exercise handler
+            exerciseLog.querySelector('.remove-exercise-log').addEventListener('click', () => {
+                if (editExerciseLogs.children.length > 1) {
+                    exerciseLog.remove();
+                } else {
+                    alert('You must have at least one exercise in your workout.');
+                }
             });
 
             // Add set button handler
@@ -342,6 +361,77 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    // View workout
+    window.viewWorkout = function(logId) {
+        const log = workoutLogs.find(l => l.id === logId);
+        const program = programs.find(p => p.id === log.programId);
+        
+        document.getElementById('view-workout-date').textContent = new Date(log.date).toLocaleDateString();
+        document.getElementById('view-workout-program').textContent = program ? program.name : 'Deleted Program';
+        
+        const viewExerciseLogs = document.getElementById('view-exercise-logs');
+        viewExerciseLogs.innerHTML = '';
+        
+        log.exercises.forEach((exercise) => {
+            const exerciseDiv = document.createElement('div');
+           
+            exerciseDiv.className = 'mb-4 p-3 border border-secondary rounded';
+            
+            // Calculate exercise stats
+            const totalWeight = exercise.sets.reduce((sum, set) => {
+                const weight = set.weight;
+                const reps = set.reps;
+                // Convert to kg if needed
+                const weightInKg = set.weightUnit === 'lbs' ? weight * 0.453592 : weight;
+                return sum + (weightInKg * reps);
+            }, 0);
+            
+            const totalReps = exercise.sets.reduce((sum, set) => sum + set.reps, 0);
+            const maxWeight = Math.max(...exercise.sets.map(set => set.weight));
+            
+            exerciseDiv.innerHTML = `
+                <h5 class="text-light mb-3">${exercise.name}</h5>
+                <div class="stats-summary mb-3">
+                    <div class="row text-light">
+                        <div class="col-md-4">
+                            <small>Total Volume: ${totalWeight.toFixed(1)} kg</small>
+                        </div>
+                        <div class="col-md-4">
+                            <small>Total Reps: ${totalReps}</small>
+                        </div>
+                        <div class="col-md-4">
+                            <small>Max Weight: ${maxWeight} ${exercise.sets[0].weightUnit}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-dark table-sm">
+                        <thead>
+                            <tr>
+                                <th>Set</th>
+                                <th>Weight</th>
+                                <th>Reps</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${exercise.sets.map((set, index) => `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${set.weight} ${set.weightUnit}</td>
+                                    <td>${set.reps}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            viewExerciseLogs.appendChild(exerciseDiv);
+        });
+        
+        viewWorkoutModal.show();
+    };
+
     // Render program list
     function renderProgramList() {
         programList.innerHTML = '';
@@ -375,91 +465,7 @@ document.addEventListener('DOMContentLoaded', function() {
             programList.appendChild(programCard);
         });
     }
-   // Add view workout function
-   window.viewWorkout = function(logId) {
-    const log = workoutLogs.find(l => l.id === logId);
-    const program = programs.find(p => p.id === log.programId);
-    
-    // Set date and program name
-    document.getElementById('view-workout-date').textContent = new Date(log.date).toLocaleDateString();
-    document.getElementById('view-workout-program').textContent = program ? program.name : 'Deleted Program';
-    
-    // Clear and populate exercise logs
-    const viewExerciseLogs = document.getElementById('view-exercise-logs');
-    viewExerciseLogs.innerHTML = '';
-    
-    log.exercises.forEach((exercise) => {
-        const exerciseDiv = document.createElement('div');
-        exerciseDiv.className = 'mb-4 p-3 border border-secondary rounded';
-        
-        // Calculate exercise stats
-        const totalWeight = exercise.sets.reduce((sum, set) => {
-            const weight = set.weight;
-            const reps = set.reps;
-            // Convert to kg if needed
-            const weightInKg = set.weightUnit === 'lbs' ? weight * 0.453592 : weight;
-            return sum + (weightInKg * reps);
-        }, 0);
-        
-        const totalReps = exercise.sets.reduce((sum, set) => sum + set.reps, 0);
-        const maxWeight = Math.max(...exercise.sets.map(set => set.weight));
-        
-        exerciseDiv.innerHTML = `
-            <h5 class="text-light mb-3">${exercise.name}</h5>
-            <div class="stats-summary mb-3">
-                <div class="row text-light">
-                    <div class="col-md-4">
-                        <small>Total Volume: ${totalWeight.toFixed(1)} kg</small>
-                    </div>
-                    <div class="col-md-4">
-                        <small>Total Reps: ${totalReps}</small>
-                    </div>
-                    <div class="col-md-4">
-                        <small>Max Weight: ${maxWeight} ${exercise.sets[0].weightUnit}</small>
-                    </div>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-dark table-sm">
-                    <thead>
-                        <tr>
-                            <th>Set</th>
-                            <th>Weight</th>
-                            <th>Reps</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${exercise.sets.map((set, index) => `
-                            <tr>
-                                <td>${index + 1}</td>
-                                <td>${set.weight} ${set.weightUnit}</td>
-                                <td>${set.reps}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
-        
-        viewExerciseLogs.appendChild(exerciseDiv);
-    });
-    
-    // Initialize modal with button handlers
-    const viewWorkoutModal = new bootstrap.Modal(document.getElementById('viewWorkoutModal'), {
-        keyboard: true,
-        backdrop: true
-    });
-    
-    // Add event listeners for close and minimize buttons
-    document.querySelectorAll('[data-bs-dismiss="modal"]').forEach(button => {
-        button.addEventListener('click', () => {
-            viewWorkoutModal.hide();
-        });
-    });
-    
-    viewWorkoutModal.show();
-};
-    // VIEW BUTTON SECTION
+
     // Render workout history
     function renderWorkoutHistory() {
         workoutHistory.innerHTML = '';
