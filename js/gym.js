@@ -261,16 +261,16 @@ document.addEventListener("DOMContentLoaded", function () {
         "exercise-log mb-4 p-3 border border-secondary rounded";
 
       exerciseLog.innerHTML = `
-            <div class="exercise-header mb-3">
-                <input type="text" class="form-control bg-secondary text-light mb-2" 
-                       placeholder="Exercise name" required>
-                <button type="button" class="btn btn-danger btn-sm remove-exercise-log mb-2">Remove Exercise</button>
-            </div>
-            <div class="sets-container">
-                ${createSetInputs(0)}
-            </div>
-            <button type="button" class="btn btn-secondary btn-sm add-set">Add Set</button>
-        `;
+          <div class="exercise-header mb-3">
+              <input type="text" class="form-control bg-secondary text-light mb-2" 
+                     placeholder="Exercise name" required>
+              <button type="button" class="btn btn-danger btn-sm remove-exercise-log mb-2">Remove Exercise</button>
+          </div>
+          <div class="sets-container">
+              ${createSetInputs(0)}
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm add-set">Add Set</button>
+      `;
 
       // Add remove exercise handler
       exerciseLog
@@ -284,35 +284,28 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
       // Add set button handler
-      function renumberSets(setsContainer) {
-        setsContainer.querySelectorAll(".set-log").forEach((setLog, index) => {
-          setLog.querySelector(".col-auto span").textContent = `Set ${
-            index + 1
-          }`;
-        });
-      }
-
-      // Modify the add set button handler in startWorkoutLog function
       exerciseLog.querySelector(".add-set").addEventListener("click", () => {
         const setsContainer = exerciseLog.querySelector(".sets-container");
         const setCount = setsContainer.children.length;
-        const setHtml = createSetInputs(setCount); // This still passes the current count for initial creation
+        const setHtml = createSetInputs(setCount);
         const wrapper = document.createElement("div");
         wrapper.innerHTML = setHtml;
         setsContainer.appendChild(wrapper.firstElementChild);
-        renumberSets(setsContainer); // Renumber after adding
       });
 
-      // Modify the remove set handler in startWorkoutLog function
-      setsContainer.addEventListener("click", (e) => {
-        if (e.target.classList.contains("remove-set")) {
-          const setLog = e.target.closest(".set-log");
-          if (setsContainer.children.length > 1) {
-            setLog.remove();
-            renumberSets(setsContainer); // Renumber after removing
+      // Remove set handler
+      exerciseLog
+        .querySelector(".sets-container")
+        .addEventListener("click", (e) => {
+          if (e.target.classList.contains("remove-set")) {
+            const setLog = e.target.closest(".set-log");
+            if (
+              exerciseLog.querySelector(".sets-container").children.length > 1
+            ) {
+              setLog.remove();
+            }
           }
-        }
-      });
+        });
 
       exerciseLogs.appendChild(exerciseLog);
     });
